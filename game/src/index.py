@@ -11,8 +11,8 @@ MAX_FRAME_RATE = 60
 # Display surface
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # regular surface
-test_surface = pygame.Surface((100, 200))
-test_surface.fill("red")
+sky_surface = pygame.image.load('../assets/sky.png')
+ground_surface = pygame.image.load("../assets/ground.png")
 
 pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
@@ -23,6 +23,8 @@ while True:
             pygame.quit()
             sys.exit()
 
-    screen.blit(test_surface, (200, 100))
+    screen.blit(sky_surface, (0, 0))
+    screen.blit(ground_surface, (0, 420))
+
     pygame.display.update()
     clock.tick(MAX_FRAME_RATE)
