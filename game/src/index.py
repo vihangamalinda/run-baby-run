@@ -1,8 +1,6 @@
 import pygame
 import sys
 
-from pygame.examples.grid import TITLE
-
 # Initialize pygame
 pygame.init()
 WIDTH = 800
@@ -12,6 +10,10 @@ MAX_FRAME_RATE = 60
 
 # Display surface
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# regular surface
+test_surface = pygame.Surface((100, 200))
+test_surface.fill("red")
+
 pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
 
@@ -21,7 +23,6 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # Draw all our objects
-    # update everything
+    screen.blit(test_surface, (200, 100))
     pygame.display.update()
     clock.tick(MAX_FRAME_RATE)
