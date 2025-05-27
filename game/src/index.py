@@ -3,8 +3,8 @@ import sys
 
 # Initialize pygame
 pygame.init()
-WIDTH = 800
-HEIGHT = 400
+WIDTH = 1280
+HEIGHT = 720
 TITLE = "Run Baby Run"
 MAX_FRAME_RATE = 60
 
