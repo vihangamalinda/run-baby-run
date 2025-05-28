@@ -14,9 +14,9 @@ test_font = pygame.font.Font(font_path, 50)
 # Display surface
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # regular surface
-sky_surface = pygame.image.load('../assets/sky.png')
-ground_surface = pygame.image.load("../assets/ground.png")
-slime_surface = pygame.image.load(slime_one_path)
+sky_surface = pygame.image.load('../assets/sky.png').convert()
+ground_surface = pygame.image.load("../assets/ground.png").convert()
+slime_surface = pygame.image.load(slime_one_path).convert_alpha()
 
 pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
