@@ -1,5 +1,3 @@
-import logging
-
 import pygame
 import sys
 
@@ -35,9 +33,10 @@ while True:
             pygame.quit()
             sys.exit()
 
-
     screen.blit(sky_surface, (0, 0))
     screen.blit(ground_surface, (0, 420))
+    pygame.draw.rect(screen,"yellow",test_surface_rect)
+    pygame.draw.rect(screen,"yellow",test_surface_rect,20,30)
     screen.blit(test_surface, test_surface_rect)
     screen.blit(slime_surface, slime_surface_rect)
     screen.blit(user_surface, user_surface_rect)
@@ -49,6 +48,8 @@ while True:
 
     if user_surface_rect.left >WIDTH :
         user_surface_rect.left =0
+
+    # print(user_surface_rect.colliderect(slime_surface_rect))
 
 
     pygame.display.update()
