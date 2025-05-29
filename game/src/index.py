@@ -29,7 +29,15 @@ pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
 test_surface = test_font.render(TITLE, True, "dark blue")
 test_surface_rect = test_surface.get_rect(center=(WIDTH / 2, 250))
-print(ground_surface.get_height())
+start_time_milli = 0
+
+
+def get_timer_surface():
+    current_time = int((pygame.time.get_ticks() - start_time_milli) / 1000)
+    timer_surface = test_font.render(f"{current_time}", True, "red")
+    timer_surface_rec = timer_surface.get_rect(center=(WIDTH / 2, 100))
+    screen.blit(timer_surface, timer_surface_rec)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -42,6 +50,7 @@ while True:
             else:
                 if event.key == pygame.K_SPACE:
                     game_active = True
+                    start_time_milli = pygame.time.get_ticks()
 
     if game_active:
         screen.blit(sky_surface, (0, 0))
@@ -50,6 +59,8 @@ while True:
         pygame.draw.rect(screen, "yellow", test_surface_rect, 20, 30)
         screen.blit(test_surface, test_surface_rect)
         screen.blit(slime_surface, slime_surface_rect)
+        get_timer_surface()
+
         # slime_x = slime_x - 5
         slime_surface_rect.left -= 1
         user_surface_rect.left += 1
