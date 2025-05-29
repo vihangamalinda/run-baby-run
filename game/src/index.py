@@ -37,11 +37,11 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if game_active:
-                if event.key == pygame.K_SPACE and user_surface_rect.bottom == GROUND_LEVEL and game_active:
+                if event.key == pygame.K_SPACE and user_surface_rect.bottom == GROUND_LEVEL:
                     user_gravity = -30
-            elif event.key == pygame.K_SPACE and not game_active:
-                game_active = True
-
+            else:
+                if event.key == pygame.K_SPACE:
+                    game_active = True
 
     if game_active:
         screen.blit(sky_surface, (0, 0))
