@@ -4,6 +4,7 @@ from random import randint
 
 # Initialize pygame
 pygame.init()
+
 WIDTH = 1280
 HEIGHT = 720
 TITLE = "Run Baby Run"
@@ -12,6 +13,7 @@ GROUND_LEVEL = 665
 USER_OFFSET = 30
 SLIME_OFFSET = 30
 BIRD_OFFSET = -315
+USER_X_POSITION = 120
 
 font_path = "../assets/font/04B_30__.TTF"
 slime_one_path = "../assets/Slime/slime1_left_walk.png"
@@ -43,7 +45,7 @@ user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
 print(user_surface.get_height(), user_surface.get_width())
 user_surface_scaled = pygame.transform.scale(user_surface,
                                              (user_surface.get_width() * 3, user_surface.get_height() * 3))
-user_surface_rect = user_surface_scaled.get_rect(midbottom=(120, GROUND_LEVEL + USER_OFFSET))
+user_surface_rect = user_surface_scaled.get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
 print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
 
 intro_surface = pygame.image.load("../assets/intro/intro_grafield_dance.png").convert_alpha()
@@ -136,7 +138,7 @@ while True:
                 if event.key == pygame.K_SPACE:
                     game_active = True
                     has_started = True
-                    user_surface_rect.move(120, GROUND_LEVEL + USER_OFFSET)
+                    user_surface_rect.move(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET)
                     obstacle_rect_list.clear()
                     start_time_milli = pygame.time.get_ticks()
 
