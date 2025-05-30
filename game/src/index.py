@@ -30,8 +30,12 @@ user_surface_scaled = pygame.transform.scale(user_surface,(user_surface.get_widt
 user_surface_rect = user_surface_scaled.get_rect(midbottom=(50, GROUND_LEVEL+USER_OFFSET))
 print(user_surface_scaled.get_height(),user_surface_scaled.get_width())
 
+intro_surface = pygame.image.load("../assets/intro/intro_grafield_dance.png").convert_alpha()
+intro_surface_scaled =pygame.transform.scale(intro_surface,(intro_surface.get_width()*3,intro_surface.get_height()*3))
+intro_surface_scaled_rect = intro_surface_scaled.get_rect(center =(WIDTH/2,HEIGHT/2))
+
 user_gravity = 0
-game_active = True
+game_active = False
 
 pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
@@ -67,7 +71,6 @@ while True:
         pygame.draw.rect(screen, "yellow", test_surface_rect, 20, 30)
         pygame.draw.rect(screen, "yellow", user_surface_rect, 20, 30)
         screen.blit(test_surface, test_surface_rect)
-        screen.blit(slime_surface, slime_surface_rect)
         screen.blit(slime_surface_scaled, slime_surface_rect)
         pygame.draw.rect(screen,"red",slime_surface_rect,20,30)
         get_timer_surface()
@@ -95,6 +98,8 @@ while True:
             game_active = False
 
     else:
+        screen.fill((3, 84, 84))
+        screen.blit(intro_surface_scaled,intro_surface_scaled_rect)
         print("GAME OVER")
 
     pygame.display.update()
