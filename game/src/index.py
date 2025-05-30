@@ -11,7 +11,7 @@ MAX_FRAME_RATE = 60
 GROUND_LEVEL = 665
 USER_OFFSET = 30
 SLIME_OFFSET = 30
-BIRD_OFFSET =-315
+BIRD_OFFSET = -315
 
 font_path = "../assets/font/04B_30__.TTF"
 slime_one_path = "../assets/Slime/slime1_left_walk.png"
@@ -77,6 +77,7 @@ instruction_font_rect = instruction_font.get_rect(center=(WIDTH / 2, 650))
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 3000)
 
+
 def get_score():
     score_info = f"Score: {score}"
     score_info_font = test_font.render(score_info, True, "White")
@@ -106,14 +107,16 @@ def obstacle_movement(obstacle_list):
 
     return obstacle_list
 
+
 def is_obstacle_colliding(obstacle_list):
-    is_colliding =False
+    is_colliding = False
     for obstacle_rect in obstacle_list:
-       if obstacle_rect.colliderect(user_surface_rect) :
+        if obstacle_rect.colliderect(user_surface_rect):
             print("Collision")
             is_colliding = True
             break
     return not is_colliding
+
 
 while True:
     for event in pygame.event.get():
@@ -133,14 +136,14 @@ while True:
                 if event.key == pygame.K_SPACE:
                     game_active = True
                     has_started = True
-                    user_surface_rect.move(120,GROUND_LEVEL + USER_OFFSET)
+                    user_surface_rect.move(120, GROUND_LEVEL + USER_OFFSET)
                     obstacle_rect_list.clear()
                     start_time_milli = pygame.time.get_ticks()
 
         if event.type == obstacle_timer and game_active:
             if randint(0, 1):
                 obstacle_rect_list.append(
-                    bird_surface_scale.get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL+BIRD_OFFSET)))
+                    bird_surface_scale.get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET)))
 
             else:
                 obstacle_rect_list.append(
