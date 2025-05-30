@@ -1,5 +1,6 @@
 import pygame
 import sys
+from random import randint
 
 # Initialize pygame
 pygame.init()
@@ -9,7 +10,7 @@ TITLE = "Run Baby Run"
 MAX_FRAME_RATE = 60
 GROUND_LEVEL = 665
 USER_OFFSET =30
-SLIME_OFFSET = 55
+SLIME_OFFSET = 30
 
 font_path = "../assets/font/04B_30__.TTF"
 slime_one_path = "../assets/Slime/slime1_left_walk.png"
@@ -22,9 +23,19 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # regular surface
 sky_surface = pygame.image.load('../assets/sky.png').convert()
 ground_surface = pygame.image.load("../assets/ground.png").convert()
+
+# Obstacles
 slime_surface = pygame.image.load(slime_one_path).convert_alpha()
-slime_surface_scaled  =pygame.transform.scale(slime_surface,(slime_surface.get_width()*3,slime_surface.get_width()*3))
+slime_surface_scaled  =pygame.transform.scale(slime_surface,(slime_surface.get_width()*2,slime_surface.get_width()*2))
 slime_surface_rect = slime_surface_scaled.get_rect(midbottom=(WIDTH, GROUND_LEVEL + SLIME_OFFSET))
+print(slime_surface_scaled.get_rect().height)
+print(slime_surface_scaled.get_rect().width)
+
+bird_surface = pygame.image.load('../assets/bird/bird.png').convert_alpha()
+bird_surface_scale =pygame.transform.scale(bird_surface,(bird_surface.get_width()/6,bird_surface.get_height()/6))
+print(bird_surface_scale.get_height())
+print(bird_surface_scale.get_width())
+obstacle_rect_list =[]
 
 user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
 print(user_surface.get_height(),user_surface.get_width())
@@ -40,6 +51,7 @@ intro_surface_scaled_rect = intro_surface_scaled.get_rect(center =(WIDTH/2,(HEIG
 has_started = False
 user_gravity = 0
 game_active = False
+user_x_movement=0
 
 pygame.display.set_caption(TITLE)
 clock = pygame.time.Clock()
@@ -58,6 +70,10 @@ instruction= " Press SPACE to jump over slimes"
 instruction_font =font_size_15.render(instruction, True, "grey")
 instruction_font_rect = instruction_font.get_rect(center=(WIDTH / 2, 650))
 
+# Timer to custom timer event
+obstacle_timer =pygame.USEREVENT +1
+pygame.time.set_timer(obstacle_timer, 3000)
+
 def get_score():
     score_info = f"Score: {score}"
     score_info_font = test_font.render(score_info, True, "White")
@@ -71,6 +87,21 @@ def get_timer_surface():
     screen.blit(timer_surface, timer_surface_rec)
     return current_time
 
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -=5
+            if obstacle_rect.y ==350:
+                screen.blit(bird_surface_scale, obstacle_rect)
+            else:
+                screen.blit(slime_surface_scaled, obstacle_rect)
+            pygame.draw.rect(screen,"red",obstacle_rect,20,3)
+
+        obstacle_list = [obstacle  for obstacle in obstacle_list if  obstacle.x>-100]
+
+    return obstacle_list
+
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -80,11 +111,27 @@ while True:
             if game_active:
                 if event.key == pygame.K_SPACE and user_surface_rect.bottom == (GROUND_LEVEL+USER_OFFSET):
                     user_gravity = -30
+                # if event.key == pygame.K_RIGHT:
+                #     user_x_movement =25
+                # if event.key == pygame.K_LEFT:
+                #     user_x_movement =-25
+
             else:
                 if event.key == pygame.K_SPACE:
                     game_active = True
                     has_started = True
                     start_time_milli = pygame.time.get_ticks()
+
+        if  event.type == obstacle_timer and game_active:
+                    if randint(0,1):
+                        obstacle_rect_list.append(
+                            bird_surface_scale.get_rect(topleft=(randint(1400, 1600), 350  )))
+
+                    else:
+                        obstacle_rect_list.append(
+                            slime_surface_scaled.get_rect(midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET)))
+
+                    print(len(obstacle_rect_list))
 
     if game_active:
         screen.blit(sky_surface, (0, 0))
@@ -93,24 +140,19 @@ while True:
         pygame.draw.rect(screen, "yellow", test_surface_rect, 20, 30)
         pygame.draw.rect(screen, "yellow", user_surface_rect, 20, 30)
         screen.blit(test_surface, test_surface_rect)
-        screen.blit(slime_surface_scaled, slime_surface_rect)
-        pygame.draw.rect(screen,"red",slime_surface_rect,20,30)
+        # screen.blit(slime_surface_scaled, slime_surface_rect)
+        # pygame.draw.rect(screen,"red",slime_surface_rect,20,30)
         score =get_timer_surface()
-
-        # slime_x = slime_x - 5
-        slime_surface_rect.left -= 1
-        user_surface_rect.left += 1
-        if slime_surface_rect.right < 0:
-            slime_surface_rect.left = WIDTH
 
         if user_surface_rect.left > WIDTH:
             user_surface_rect.left = 0
 
-        # if user_surface_rect.bottom <GROUND_LEVEL:
-        #     user_surface_rect.bottom += 2
-
         user_gravity += 1
         user_surface_rect.y += user_gravity
+
+        # Obstacle movement
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
+
 
         if user_surface_rect.bottom > GROUND_LEVEL +USER_OFFSET:
             user_surface_rect.bottom = GROUND_LEVEL+USER_OFFSET
