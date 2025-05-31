@@ -1,5 +1,3 @@
-from http.cookiejar import debug
-
 import pygame
 import sys
 from random import randint
@@ -22,29 +20,19 @@ slime_one_path = "../assets/Slime/slime1_left_walk.png"
 test_font = pygame.font.Font(font_path, 50)
 font_size_30 = pygame.font.Font(font_path, 30)
 font_size_15 = pygame.font.Font(font_path, 15)
-grafield_intro_path ="../assets/intro/intro_grafield_"
+grafield_intro_path ="../assets/intro/"
 
 def get_intro_path(index):
-    return f"{grafield_intro_path}{index}.png"
+    return f"{grafield_intro_path}/{index}.png"
 
-def get_intro_frames_list():
-    grafield_01 =pygame.image.load(get_intro_path("01")).convert_alpha()
-    grafield_02 = pygame.image.load(get_intro_path("02")).convert_alpha()
-    grafield_03 = pygame.image.load(get_intro_path("03")).convert_alpha()
-    grafield_04 = pygame.image.load(get_intro_path("04")).convert_alpha()
-    grafield_05 = pygame.image.load(get_intro_path("05")).convert_alpha()
-    grafield_06 = pygame.image.load(get_intro_path("06")).convert_alpha()
-    grafield_07 = pygame.image.load(get_intro_path("07")).convert_alpha()
-    grafield_08 = pygame.image.load(get_intro_path("08")).convert_alpha()
-    grafield_09 = pygame.image.load(get_intro_path("09")).convert_alpha()
-    grafield_10 = pygame.image.load(get_intro_path("10")).convert_alpha()
-    grafield_11 = pygame.image.load(get_intro_path("11")).convert_alpha()
+def get_intro_frames_list(frames,scale):
+    frames_list = []
+    for i in range(frames):
+        ori_img =pygame.image.load(get_intro_path(i)).convert_alpha()
+        scaled_img = pygame.transform.scale(ori_img, (ori_img.get_width()*scale, ori_img.get_height()*scale))
+        frames_list.append(scaled_img)
 
-    grafield_list =[grafield_01, grafield_02, grafield_03, grafield_04,grafield_05,grafield_06,grafield_07,grafield_08,grafield_09,grafield_10,grafield_11]
-
-    return grafield_list
-
-
+    return frames_list
 
 # Display surface
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -73,13 +61,8 @@ user_surface_scaled = pygame.transform.scale(user_surface,
 user_surface_rect = user_surface_scaled.get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
 print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
 
-intro_surface = pygame.image.load("../assets/intro/intro_grafield_01.png").convert_alpha()
-intro_surface_scaled = pygame.transform.scale(intro_surface,
-                                              (intro_surface.get_width() * 3, intro_surface.get_height() * 3))
-intro_surface_scaled_rect = intro_surface_scaled.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 100))
-
 # Grafield intro
-grafield_list = get_intro_frames_list()
+grafield_frames = get_intro_frames_list(10,3)
 
 
 intro_frame_index=0
@@ -187,7 +170,7 @@ while True:
             print(len(obstacle_rect_list))
         if event.type == intro_timer and not game_active:
             intro_frame_index += 1
-            if intro_frame_index >= 11: intro_frame_index = 0
+            if intro_frame_index >= 10: intro_frame_index = 0
             print(f"frames:{intro_frame_index}")
 
 
@@ -224,7 +207,8 @@ while True:
         screen.fill((3, 84, 84))
         screen.blit(test_surface, test_surface_intro_rect)
         # screen.blit(intro_surface_scaled, intro_surface_scaled_rect)
-        screen.blit(grafield_list[intro_frame_index], intro_surface_scaled_rect)
+        current_grafield_frame = grafield_frames[intro_frame_index]
+        screen.blit(current_grafield_frame, current_grafield_frame.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 100)))
 
         if has_started:
             get_score()
