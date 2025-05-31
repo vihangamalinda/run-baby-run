@@ -16,7 +16,6 @@ BIRD_OFFSET = -315
 USER_X_POSITION = 120
 
 font_path = "../assets/font/04B_30__.TTF"
-slime_one_path = "../assets/slime/slime1_left_walk.png"
 test_font = pygame.font.Font(font_path, 50)
 font_size_30 = pygame.font.Font(font_path, 30)
 font_size_15 = pygame.font.Font(font_path, 15)
@@ -37,6 +36,12 @@ get_intro_path = get_sub_path(grafield_intro_path)
 get_user_path = get_sub_path(user_walk_path)
 get_bird_fly_path = get_sub_path(bird_fly_path)
 get_slime_slide_path = get_sub_path(slime_walk_path)
+
+# Mentoring frames
+intro_frame_index = 0
+user_frame_index = 0
+bird_frame_index = 0
+slime_frame_index = 0
 
 
 def get_frames_list(main_path, frames, scale):
@@ -60,41 +65,16 @@ sky_surface = pygame.image.load('../assets/sky.png').convert()
 ground_surface = pygame.image.load("../assets/ground.png").convert()
 
 # Obstacles
-# slime_surface = pygame.image.load(slime_one_path).convert_alpha()
-# slime_surface_scaled = pygame.transform.scale(slime_surface,
-#                                               (slime_surface.get_width() * 2, slime_surface.get_width() * 2))
-# slime_surface_rect = slime_surface_scaled.get_rect(midbottom=(WIDTH, GROUND_LEVEL + SLIME_OFFSET))
-# print(slime_surface_scaled.get_rect().height)
-# print(slime_surface_scaled.get_rect().width)
-
-# slime_frames =get_frames_list()
-
-# bird_surface = pygame.image.load('../assets/bird/bird.png').convert_alpha()
-# bird_surface_scale = pygame.transform.scale(bird_surface, (bird_surface.get_width() / 6, bird_surface.get_height() / 6))
-
 bird_fly_frames = get_frames_list(get_bird_fly_path, 10, 0.2)
 slime_slide_frames = get_frames_list(get_slime_slide_path, 8, 2)
 obstacle_rect_list = []
 
-# user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
-# print(user_surface.get_height(), user_surface.get_width())
-# user_surface_scaled = pygame.transform.scale(user_surface,
-#                                              (user_surface.get_width() * 3, user_surface.get_height() * 3))
-# user_surface_rect = user_surface_scaled.get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
-# print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
-
 # Grafield intro
 grafield_frames = get_frames_list(get_intro_path, 11, 3)
-print(len(grafield_frames))
 
 # User walk
 user_walk_frames = get_frames_list(get_user_path, 12, 3)
-user_surface_rect = user_walk_frames[0].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
-
-intro_frame_index = 0
-user_frame_index = 0
-bird_frame_index = 0
-slime_frame_index = 0
+user_surface_rect = user_walk_frames[user_frame_index].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
 
 has_started = False
 user_gravity = 0
@@ -184,12 +164,6 @@ while True:
             if game_active:
                 if event.key == pygame.K_SPACE and user_surface_rect.bottom == (GROUND_LEVEL + USER_OFFSET):
                     user_gravity = -30
-                # if event.key == pygame.K_RIGHT:
-                #     user_x_movement =25
-                # if event.key == pygame.K_LEFT:
-                #     user_x_movement =-
-
-
             else:
                 if event.key == pygame.K_SPACE:
                     game_active = True
@@ -235,8 +209,6 @@ while True:
         pygame.draw.rect(screen, "yellow", test_surface_rect, 20, 30)
         pygame.draw.rect(screen, "yellow", user_surface_rect, 20, 30)
         screen.blit(test_surface, test_surface_rect)
-        # screen.blit(slime_surface_scaled, slime_surface_rect)
-        # pygame.draw.rect(screen,"red",slime_surface_rect,20,30)
         score = get_timer_surface()
 
         if user_surface_rect.left > WIDTH:
@@ -254,13 +226,10 @@ while True:
             user_surface_rect.bottom = GROUND_LEVEL + USER_OFFSET
 
         screen.blit(user_walk_frames[user_frame_index], user_surface_rect)
-        # if slime_surface_rect.collidepoint(user_surface_rect.midbottom):
-        #     game_active = False
 
     else:
         screen.fill((3, 84, 84))
         screen.blit(test_surface, test_surface_intro_rect)
-        # screen.blit(intro_surface_scaled, intro_surface_scaled_rect)
         current_grafield_frame = grafield_frames[intro_frame_index]
         screen.blit(current_grafield_frame, current_grafield_frame.get_rect(center=(WIDTH / 2, (HEIGHT / 2) + 100)))
 
