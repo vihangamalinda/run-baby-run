@@ -21,17 +21,25 @@ test_font = pygame.font.Font(font_path, 50)
 font_size_30 = pygame.font.Font(font_path, 30)
 font_size_15 = pygame.font.Font(font_path, 15)
 grafield_intro_path ="../assets/intro/"
+user_walk_path ="../assets/user/"
 
 def get_intro_path(index):
     return f"{grafield_intro_path}/{index}.png"
 
-def get_intro_frames_list(frames,scale):
+def get_user_path(index):
+    return f"{user_walk_path}/{index}.png"
+
+def get_intro_frames_list(main_path,frames,scale):
     frames_list = []
     for i in range(frames):
-        ori_img =pygame.image.load(get_intro_path(i)).convert_alpha()
+        print(i)
+        ori_img =pygame.image.load(main_path(i)).convert_alpha()
         scaled_img = pygame.transform.scale(ori_img, (ori_img.get_width()*scale, ori_img.get_height()*scale))
         frames_list.append(scaled_img)
 
+    print("")
+    print(len(frames_list))
+    print()
     return frames_list
 
 # Display surface
@@ -54,18 +62,26 @@ print(bird_surface_scale.get_height())
 print(bird_surface_scale.get_width())
 obstacle_rect_list = []
 
-user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
-print(user_surface.get_height(), user_surface.get_width())
-user_surface_scaled = pygame.transform.scale(user_surface,
-                                             (user_surface.get_width() * 3, user_surface.get_height() * 3))
-user_surface_rect = user_surface_scaled.get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
-print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
+# user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
+# print(user_surface.get_height(), user_surface.get_width())
+# user_surface_scaled = pygame.transform.scale(user_surface,
+#                                              (user_surface.get_width() * 3, user_surface.get_height() * 3))
+# user_surface_rect = user_surface_scaled.get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
+# print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
 
 # Grafield intro
-grafield_frames = get_intro_frames_list(10,3)
+grafield_frames = get_intro_frames_list(get_intro_path,11,3)
+print(len(grafield_frames))
+
+# User walk
+user_walk_frames = get_intro_frames_list(get_user_path,12,3)
+user_surface_rect = user_walk_frames[0].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
+
+
 
 
 intro_frame_index=0
+user_frame_index=0
 
 has_started = False
 user_gravity = 0
@@ -95,6 +111,9 @@ pygame.time.set_timer(obstacle_timer, 3000)
 
 intro_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(intro_timer, 100)
+
+user_timer =pygame.USEREVENT + 3
+pygame.time.set_timer(user_timer, 100)
 
 def get_score():
     score_info = f"Score: {score}"
@@ -126,7 +145,7 @@ def obstacle_movement(obstacle_list):
     return obstacle_list
 
 
-def is_obstacle_colliding(obstacle_list):
+def is_obstacle_colliding(user_surface_rect,obstacle_list):
     is_colliding = False
     for obstacle_rect in obstacle_list:
         if obstacle_rect.colliderect(user_surface_rect):
@@ -148,7 +167,8 @@ while True:
                 # if event.key == pygame.K_RIGHT:
                 #     user_x_movement =25
                 # if event.key == pygame.K_LEFT:
-                #     user_x_movement =-25
+                #     user_x_movement =-
+
 
             else:
                 if event.key == pygame.K_SPACE:
@@ -158,19 +178,25 @@ while True:
                     obstacle_rect_list.clear()
                     start_time_milli = pygame.time.get_ticks()
 
-        if event.type == obstacle_timer and game_active:
-            if randint(0, 1):
-                obstacle_rect_list.append(
-                    bird_surface_scale.get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET)))
+        if game_active:
+            if event.type == obstacle_timer:
+                 if randint(0, 1):
+                     obstacle_rect_list.append(bird_surface_scale.get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET)))
 
-            else:
-                obstacle_rect_list.append(
-                    slime_surface_scaled.get_rect(midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET)))
+                 else:
+                    obstacle_rect_list.append(
+                     slime_surface_scaled.get_rect(midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET)))
 
-            print(len(obstacle_rect_list))
+            # print(len(obstacle_rect_list))
+            if event.type ==user_timer:
+                user_frame_index +=1
+                if user_frame_index >= len(user_walk_frames):user_frame_index=0
+                print(f"User Frame: {user_frame_index}")
+                # if user_frame_index >= len(grafield_frames):
+
         if event.type == intro_timer and not game_active:
             intro_frame_index += 1
-            if intro_frame_index >= 10: intro_frame_index = 0
+            if intro_frame_index >= len(grafield_frames): intro_frame_index = 0
             print(f"frames:{intro_frame_index}")
 
 
@@ -191,7 +217,7 @@ while True:
         user_gravity += 1
         user_surface_rect.y += user_gravity
 
-        game_active = is_obstacle_colliding(obstacle_rect_list)
+        game_active = is_obstacle_colliding(user_surface_rect,obstacle_rect_list)
 
         # Obstacle movement
         obstacle_rect_list = obstacle_movement(obstacle_rect_list)
@@ -199,7 +225,7 @@ while True:
         if user_surface_rect.bottom > GROUND_LEVEL + USER_OFFSET:
             user_surface_rect.bottom = GROUND_LEVEL + USER_OFFSET
 
-        screen.blit(user_surface_scaled, user_surface_rect)
+        screen.blit(user_walk_frames[user_frame_index], user_surface_rect)
         if slime_surface_rect.collidepoint(user_surface_rect.midbottom):
             game_active = False
 
