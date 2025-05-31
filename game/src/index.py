@@ -145,10 +145,10 @@ def obstacle_movement(obstacle_list):
     return obstacle_list
 
 
-def is_obstacle_colliding(user_surface_rect,obstacle_list):
+def is_obstacle_colliding(user_rec,obstacle_list):
     is_colliding = False
     for obstacle_rect in obstacle_list:
-        if obstacle_rect.colliderect(user_surface_rect):
+        if obstacle_rect.colliderect(user_rec):
             print("Collision")
             is_colliding = True
             break
