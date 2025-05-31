@@ -16,20 +16,26 @@ BIRD_OFFSET = -315
 USER_X_POSITION = 120
 
 font_path = "../assets/font/04B_30__.TTF"
-slime_one_path = "../assets/Slime/slime1_left_walk.png"
+slime_one_path = "../assets/slime/slime1_left_walk.png"
 test_font = pygame.font.Font(font_path, 50)
 font_size_30 = pygame.font.Font(font_path, 30)
 font_size_15 = pygame.font.Font(font_path, 15)
 grafield_intro_path ="../assets/intro/"
 user_walk_path ="../assets/user/"
+bird_fly_path ="../assets/bird/"
+slime_walk_path= "../assets/slime/"
 
-def get_intro_path(index):
-    return f"{grafield_intro_path}/{index}.png"
+def get_sub_path(main_path):
+     def get_full_path(index):
+         return  f"{main_path}/{index}.png"
+     return get_full_path
 
-def get_user_path(index):
-    return f"{user_walk_path}/{index}.png"
+get_intro_path=get_sub_path(grafield_intro_path)
+get_user_path=get_sub_path(user_walk_path)
+get_bird_fly_path =get_sub_path(bird_fly_path)
+get_slime_slide_path =get_sub_path(slime_walk_path)
 
-def get_intro_frames_list(main_path,frames,scale):
+def get_frames_list(main_path, frames, scale):
     frames_list = []
     for i in range(frames):
         print(i)
@@ -56,10 +62,13 @@ slime_surface_rect = slime_surface_scaled.get_rect(midbottom=(WIDTH, GROUND_LEVE
 print(slime_surface_scaled.get_rect().height)
 print(slime_surface_scaled.get_rect().width)
 
-bird_surface = pygame.image.load('../assets/bird/bird.png').convert_alpha()
-bird_surface_scale = pygame.transform.scale(bird_surface, (bird_surface.get_width() / 6, bird_surface.get_height() / 6))
-print(bird_surface_scale.get_height())
-print(bird_surface_scale.get_width())
+# slime_frames =get_frames_list()
+
+# bird_surface = pygame.image.load('../assets/bird/bird.png').convert_alpha()
+# bird_surface_scale = pygame.transform.scale(bird_surface, (bird_surface.get_width() / 6, bird_surface.get_height() / 6))
+
+bird_fly_frames = get_frames_list(get_bird_fly_path, 10, 0.2)
+slime_slide_frames= get_frames_list(get_slime_slide_path,8,2)
 obstacle_rect_list = []
 
 # user_surface = pygame.image.load("../assets/user/user_walk.png").convert_alpha()
@@ -70,11 +79,11 @@ obstacle_rect_list = []
 # print(user_surface_scaled.get_height(), user_surface_scaled.get_width())
 
 # Grafield intro
-grafield_frames = get_intro_frames_list(get_intro_path,11,3)
+grafield_frames = get_frames_list(get_intro_path, 11, 3)
 print(len(grafield_frames))
 
 # User walk
-user_walk_frames = get_intro_frames_list(get_user_path,12,3)
+user_walk_frames = get_frames_list(get_user_path, 12, 3)
 user_surface_rect = user_walk_frames[0].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
 
 
@@ -82,6 +91,8 @@ user_surface_rect = user_walk_frames[0].get_rect(midbottom=(USER_X_POSITION, GRO
 
 intro_frame_index=0
 user_frame_index=0
+bird_frame_index=0
+slime_frame_index=0
 
 has_started = False
 user_gravity = 0
@@ -115,6 +126,12 @@ pygame.time.set_timer(intro_timer, 100)
 user_timer =pygame.USEREVENT + 3
 pygame.time.set_timer(user_timer, 100)
 
+bird_timer =pygame.USEREVENT+4
+pygame.time.set_timer(bird_timer, 80)
+
+slime_timer = pygame.USEREVENT +5
+pygame.time.set_timer(slime_timer,100)
+
 def get_score():
     score_info = f"Score: {score}"
     score_info_font = test_font.render(score_info, True, "White")
@@ -135,9 +152,9 @@ def obstacle_movement(obstacle_list):
         for obstacle_rect in obstacle_list:
             obstacle_rect.x -= 8
             if obstacle_rect.y == 350:
-                screen.blit(bird_surface_scale, obstacle_rect)
+                screen.blit(bird_fly_frames[bird_frame_index], obstacle_rect)
             else:
-                screen.blit(slime_surface_scaled, obstacle_rect)
+                screen.blit(slime_slide_frames[slime_frame_index], obstacle_rect)
             pygame.draw.rect(screen, "red", obstacle_rect, 20, 3)
 
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
@@ -181,18 +198,25 @@ while True:
         if game_active:
             if event.type == obstacle_timer:
                  if randint(0, 1):
-                     obstacle_rect_list.append(bird_surface_scale.get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET)))
+                     bird_scaled_rec = bird_fly_frames[bird_frame_index].get_rect(topleft=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET))
+                     obstacle_rect_list.append(bird_scaled_rec)
 
                  else:
-                    obstacle_rect_list.append(
-                     slime_surface_scaled.get_rect(midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET)))
+                    slime_scaled_rec = slime_slide_frames[slime_frame_index].get_rect(midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET))
+                    obstacle_rect_list.append(slime_scaled_rec)
 
             # print(len(obstacle_rect_list))
             if event.type ==user_timer:
                 user_frame_index +=1
                 if user_frame_index >= len(user_walk_frames):user_frame_index=0
-                print(f"User Frame: {user_frame_index}")
-                # if user_frame_index >= len(grafield_frames):
+
+            if event.type == bird_timer:
+                bird_frame_index+=1
+                if bird_frame_index >= len(bird_fly_frames):bird_frame_index=0
+
+            if event.type ==slime_timer:
+                slime_frame_index+=1
+                if slime_frame_index>=len(slime_slide_frames):slime_frame_index=0
 
         if event.type == intro_timer and not game_active:
             intro_frame_index += 1
