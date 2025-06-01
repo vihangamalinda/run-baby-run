@@ -21,6 +21,7 @@ font_size_30 = pygame.font.Font(font_path, 30)
 font_size_15 = pygame.font.Font(font_path, 15)
 grafield_intro_path = "../assets/intro/"
 user_walk_path = "../assets/user/"
+user_jump_path = "../assets/user/jump/"
 bird_fly_path = "../assets/bird/"
 slime_walk_path = "../assets/slime/"
 
@@ -34,6 +35,7 @@ def get_sub_path(main_path):
 
 get_intro_path = get_sub_path(grafield_intro_path)
 get_user_path = get_sub_path(user_walk_path)
+get_user_jump_path= get_sub_path(user_jump_path)
 get_bird_fly_path = get_sub_path(bird_fly_path)
 get_slime_slide_path = get_sub_path(slime_walk_path)
 
@@ -56,6 +58,42 @@ def get_frames_list(main_path, frames, scale):
     print(len(frames_list))
     print()
     return frames_list
+
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.user_walk_frames = get_frames_list(get_user_path, 12, 3)
+        self.user_jump_frames = get_frames_list(get_user_jump_path, 3, 3)
+        self.image = self.user_walk_frames[user_frame_index]
+        self.user_frame_index = 0
+
+        self.rect = self.image.get_rect(midbottom=(WIDTH / 2, GROUND_LEVEL + USER_OFFSET))
+
+    def player_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE] and self.rect.bottom >= (GROUND_LEVEL + USER_OFFSET):
+            self.gravity = -30
+
+    def apply_gravity(self):
+        self.gravity += 1
+        self.rect.y += self.gravity
+        if self.rect.bottom >= (GROUND_LEVEL + USER_OFFSET): self.rect.bottom = GROUND_LEVEL + USER_OFFSET
+
+    def update(self):
+        self.player_input()
+        self.apply_gravity()
+        self.animation_state()
+
+    def animation_state(self):
+        is_above_ground = self.rect.bottom < (GROUND_LEVEL + USER_OFFSET)
+        self.user_frame_index += 0.1
+        if is_above_ground:
+            if self.user_frame_index >= len(self.user_jump_frames): self.user_frame_index = 0
+            self.image = self.user_jump_frames[int(self.user_frame_index)]
+        else:
+            if self.user_frame_index >= len(self.user_walk_frames): self.user_frame_index = 0
+            self.image = self.user_walk_frames[int(self.user_frame_index)]
 
 
 # Display surface
@@ -113,6 +151,9 @@ pygame.time.set_timer(bird_timer, 80)
 
 slime_timer = pygame.USEREVENT + 5
 pygame.time.set_timer(slime_timer, 100)
+
+player = pygame.sprite.GroupSingle()
+player.add(Player())
 
 
 def get_score():
@@ -226,6 +267,9 @@ while True:
             user_surface_rect.bottom = GROUND_LEVEL + USER_OFFSET
 
         screen.blit(user_walk_frames[user_frame_index], user_surface_rect)
+        player.draw(screen)
+        player.update()
+
 
     else:
         screen.fill((3, 84, 84))
