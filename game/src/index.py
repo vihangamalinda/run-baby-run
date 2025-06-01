@@ -81,6 +81,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.user_walk_frames[self.user_frame_index]
         self.rect = self.image.get_rect(midbottom=(200, GROUND_LEVEL + USER_OFFSET))
         self.gravity = 0
+        self.rect.inflate_ip(-50,-50)
 
     def player_input(self):
         keys = pygame.key.get_pressed()
@@ -124,6 +125,8 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = self.movement_frames[self.movement_frames_index]
         position_x = (randint(1400, 1600))
         self.rect = self.image.get_rect(midbottom=(position_x, self.position_y))
+        self.rect.inflate_ip(-50,-50)
+
 
     def update(self):
         self.animation_state()
@@ -139,13 +142,20 @@ class Obstacle(pygame.sprite.Sprite):
         if self.rect.x <= -200:
             self.kill()
 
+def is_sprites_colliding():
+   is_colliding = False
+   if pygame.sprite.spritecollide(player_group.sprite,obstacle_group,False):
+       obstacle_group.empty()
+       is_colliding = True
+
+   return is_colliding
 
 # Grafield intro
 grafield_frames = get_frames_list(get_intro_path, 11, 3)
 
 # User walk
 user_walk_frames = get_frames_list(get_user_path, 12, 3)
-user_surface_rect = user_walk_frames[user_frame_index].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
+# user_surface_rect = user_walk_frames[user_frame_index].get_rect(midbottom=(USER_X_POSITION, GROUND_LEVEL + USER_OFFSET))
 
 has_started = False
 user_gravity = 0
@@ -232,6 +242,9 @@ def is_obstacle_colliding(user_rec, obstacle_list):
 
 
 while True:
+    user_surface_rect = player_group.sprite.rect
+    print(user_surface_rect)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -284,6 +297,7 @@ while True:
         player_group.update()
         obstacle_group.draw(screen)
         obstacle_group.update()
+        game_active = not (is_sprites_colliding())
 
 
     else:
