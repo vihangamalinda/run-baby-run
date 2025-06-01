@@ -65,9 +65,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.user_walk_frames = get_frames_list(get_user_path, 12, 3)
         self.user_jump_frames = get_frames_list(get_user_jump_path, 3, 3)
-        self.image = self.user_walk_frames[user_frame_index]
         self.user_frame_index = 0
-
+        self.image = self.user_walk_frames[self.user_frame_index]
         self.rect = self.image.get_rect(midbottom=(WIDTH / 2, GROUND_LEVEL + USER_OFFSET))
 
     def player_input(self):
@@ -94,7 +93,6 @@ class Player(pygame.sprite.Sprite):
         else:
             if self.user_frame_index >= len(self.user_walk_frames): self.user_frame_index = 0
             self.image = self.user_walk_frames[int(self.user_frame_index)]
-
 
 # Display surface
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
