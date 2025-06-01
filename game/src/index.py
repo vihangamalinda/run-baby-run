@@ -10,8 +10,8 @@ HEIGHT = 720
 TITLE = "Run Baby Run"
 MAX_FRAME_RATE = 60
 GROUND_LEVEL = 665
-USER_OFFSET = 30
-SLIME_OFFSET = 30
+USER_OFFSET = -15
+SLIME_OFFSET = 5
 BIRD_OFFSET = -230
 USER_X_POSITION = 120
 
@@ -55,14 +55,14 @@ slime_frame_index = 0
 def get_frames_list(main_path, frames, scale):
     frames_list = []
     for i in range(frames):
-        print(i)
+        # print(i)
         ori_img = pygame.image.load(main_path(i)).convert_alpha()
         scaled_img = pygame.transform.scale(ori_img, (ori_img.get_width() * scale, ori_img.get_height() * scale))
         frames_list.append(scaled_img)
 
-    print("")
-    print(len(frames_list))
-    print()
+    # print("")
+    # print(len(frames_list))
+    # print()
     return frames_list
 
 
@@ -243,7 +243,7 @@ def is_obstacle_colliding(user_rec, obstacle_list):
 
 while True:
     user_surface_rect = player_group.sprite.rect
-    print(user_surface_rect)
+    # print(user_surface_rect)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -263,7 +263,8 @@ while True:
 
         if game_active:
             if event.type == obstacle_timer:
-                obstacle_type = choice(["slime", "slime", "bird", "slime"])
+                obstacle_type = choice(["slime","bird", "slime", "bird", "slime"])
+                print(obstacle_type)
                 obstacle = Obstacle(obstacle_type)
                 obstacle_group.add(obstacle)
 
