@@ -80,6 +80,7 @@ class Player(pygame.sprite.Sprite):
         self.user_frame_index = 0
         self.image = self.user_walk_frames[self.user_frame_index]
         self.rect = self.image.get_rect(midbottom=(200, GROUND_LEVEL + USER_OFFSET))
+        self.gravity = 0
 
     def player_input(self):
         keys = pygame.key.get_pressed()
