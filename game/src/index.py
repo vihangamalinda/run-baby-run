@@ -1,6 +1,6 @@
 import pygame
 import sys
-from random import randint
+from random import randint,choice
 
 # Initialize pygame
 pygame.init()
@@ -113,10 +113,12 @@ class Obstacle(pygame.sprite.Sprite):
         if obstacle_type== "bird":
             self.movement_frames =bird_fly_frames
             self.position_y = GROUND_LEVEL + BIRD_OFFSET
+            speed =6
         else :
             self.movement_frames =slime_slide_frames
             self.position_y=GROUND_LEVEL+SLIME_OFFSET
-
+            speed =8
+        self.movement_speed = speed
         self.movement_frames_index =0
         self.image =self.movement_frames[self.movement_frames_index]
         position_x =(randint(1400, 1600))
@@ -124,7 +126,7 @@ class Obstacle(pygame.sprite.Sprite):
 
     def update(self):
        self.animation_state()
-       self.rect.x -=6
+       self.rect.x -=self.movement_speed
        self.destroy()
 
     def animation_state(self):
@@ -247,17 +249,9 @@ while True:
 
         if game_active:
             if event.type == obstacle_timer:
-                obstacle_group.add(Obstacle("bird"))
-                if randint(0, 1):
-                    bird_scaled_rec = bird_fly_frames[bird_frame_index].get_rect(
-                        midbottom=(randint(1400, 1600), GROUND_LEVEL + BIRD_OFFSET))
-                    obstacle_rect_list.append(bird_scaled_rec)
-
-
-                else:
-                    slime_scaled_rec = slime_slide_frames[slime_frame_index].get_rect(
-                        midbottom=(randint(1400, 1600), GROUND_LEVEL + SLIME_OFFSET))
-                    obstacle_rect_list.append(slime_scaled_rec)
+                    obstacle_type =choice(["slime","slime","slime","bird"])
+                    obstacle = Obstacle(obstacle_type)
+                    obstacle_group.add(obstacle)
 
             # print(len(obstacle_rect_list))
             if event.type == user_timer:
