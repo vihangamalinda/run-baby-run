@@ -1,6 +1,6 @@
 import pygame
 import sys
-from random import randint,choice
+from random import randint, choice
 
 # Initialize pygame
 pygame.init()
@@ -41,7 +41,7 @@ def get_sub_path(main_path):
 
 get_intro_path = get_sub_path(grafield_intro_path)
 get_user_path = get_sub_path(user_walk_path)
-get_user_jump_path= get_sub_path(user_jump_path)
+get_user_jump_path = get_sub_path(user_jump_path)
 get_bird_fly_path = get_sub_path(bird_fly_path)
 get_slime_slide_path = get_sub_path(slime_walk_path)
 
@@ -50,7 +50,6 @@ intro_frame_index = 0
 user_frame_index = 0
 bird_frame_index = 0
 slime_frame_index = 0
-
 
 
 def get_frames_list(main_path, frames, scale):
@@ -66,6 +65,7 @@ def get_frames_list(main_path, frames, scale):
     print()
     return frames_list
 
+
 # Obstacles
 bird_fly_frames = get_frames_list(get_bird_fly_path, 10, 0.2)
 slime_slide_frames = get_frames_list(get_slime_slide_path, 8, 2)
@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
         self.user_jump_frames = get_frames_list(get_user_jump_path, 3, 3)
         self.user_frame_index = 0
         self.image = self.user_walk_frames[self.user_frame_index]
-        self.rect = self.image.get_rect(midbottom=(WIDTH / 2, GROUND_LEVEL + USER_OFFSET))
+        self.rect = self.image.get_rect(midbottom=(200, GROUND_LEVEL + USER_OFFSET))
 
     def player_input(self):
         keys = pygame.key.get_pressed()
@@ -108,26 +108,26 @@ class Player(pygame.sprite.Sprite):
 
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self,obstacle_type):
+    def __init__(self, obstacle_type):
         super().__init__()
-        if obstacle_type== "bird":
-            self.movement_frames =bird_fly_frames
+        if obstacle_type == "bird":
+            self.movement_frames = bird_fly_frames
             self.position_y = GROUND_LEVEL + BIRD_OFFSET
-            speed =6
-        else :
-            self.movement_frames =slime_slide_frames
-            self.position_y=GROUND_LEVEL+SLIME_OFFSET
-            speed =8
+            speed = 6
+        else:
+            self.movement_frames = slime_slide_frames
+            self.position_y = GROUND_LEVEL + SLIME_OFFSET
+            speed = 8
         self.movement_speed = speed
-        self.movement_frames_index =0
-        self.image =self.movement_frames[self.movement_frames_index]
-        position_x =(randint(1400, 1600))
+        self.movement_frames_index = 0
+        self.image = self.movement_frames[self.movement_frames_index]
+        position_x = (randint(1400, 1600))
         self.rect = self.image.get_rect(midbottom=(position_x, self.position_y))
 
     def update(self):
-       self.animation_state()
-       self.rect.x -=self.movement_speed
-       self.destroy()
+        self.animation_state()
+        self.rect.x -= self.movement_speed
+        self.destroy()
 
     def animation_state(self):
         self.movement_frames_index += 0.1
@@ -135,8 +135,9 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = self.movement_frames[int(self.movement_frames_index)]
 
     def destroy(self):
-        if self.rect.x <= -200 :
+        if self.rect.x <= -200:
             self.kill()
+
 
 # Grafield intro
 grafield_frames = get_frames_list(get_intro_path, 11, 3)
@@ -224,7 +225,6 @@ def is_obstacle_colliding(user_rec, obstacle_list):
     is_colliding = False
     for obstacle_rect in obstacle_list:
         if obstacle_rect.colliderect(user_rec):
-            print("Collision")
             is_colliding = True
             break
     return not is_colliding
@@ -249,9 +249,9 @@ while True:
 
         if game_active:
             if event.type == obstacle_timer:
-                    obstacle_type =choice(["slime","slime","slime","bird"])
-                    obstacle = Obstacle(obstacle_type)
-                    obstacle_group.add(obstacle)
+                obstacle_type = choice(["slime", "slime", "bird", "slime"])
+                obstacle = Obstacle(obstacle_type)
+                obstacle_group.add(obstacle)
 
             # print(len(obstacle_rect_list))
             if event.type == user_timer:
@@ -269,32 +269,16 @@ while True:
         if event.type == intro_timer and not game_active:
             intro_frame_index += 1
             if intro_frame_index >= len(grafield_frames): intro_frame_index = 0
-            print(f"frames:{intro_frame_index}")
 
     if game_active:
         screen.blit(sky_surface, (0, 0))
         screen.blit(ground_surface, (0, 420))
         pygame.draw.rect(screen, "yellow", test_surface_rect)
         pygame.draw.rect(screen, "yellow", test_surface_rect, 20, 30)
-        pygame.draw.rect(screen, "yellow", user_surface_rect, 20, 30)
+
         screen.blit(test_surface, test_surface_rect)
         score = get_timer_surface()
 
-        if user_surface_rect.left > WIDTH:
-            user_surface_rect.left = 0
-
-        user_gravity += 1
-        user_surface_rect.y += user_gravity
-
-        game_active = is_obstacle_colliding(user_surface_rect, obstacle_rect_list)
-
-        # Obstacle movement
-        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
-
-        if user_surface_rect.bottom > GROUND_LEVEL + USER_OFFSET:
-            user_surface_rect.bottom = GROUND_LEVEL + USER_OFFSET
-
-        screen.blit(user_walk_frames[user_frame_index], user_surface_rect)
         player_group.draw(screen)
         player_group.update()
         obstacle_group.draw(screen)
